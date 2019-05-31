@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script runs the example_4 script in parallel. 
+# This script runs the roomsimove_single.py script in parallel. 
 
 nj=30
 cmd=queue.pl
@@ -25,4 +25,4 @@ done
 utils/split_scp.pl $scp $split_scps || exit 1;
 
 $cmd JOB=1:$nj $logdir/extract_rir.JOB.log \
-  local/example_5.py $output_dir/rir_info.JOB.scp $output_dir/JOB
+  roomsimove_single.py $output_dir/rir_info.JOB.scp $output_dir/JOB
