@@ -25,4 +25,4 @@ done
 utils/split_scp.pl $scp $split_scps || exit 1;
 
 $cmd JOB=1:$nj $logdir/extract_rir.JOB.log \
-  roomsimove_single.py $output_dir/rir_info.JOB.scp $output_dir/JOB
+  local/roomsimove_single.py $output_dir/rir_info.JOB.scp $output_dir/JOB

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 import numpy as np
@@ -470,33 +470,31 @@ class RoomSim(object):
 ### main ###
 if __name__ == '__main__':
 
-text_fh = open(args.database_path, 'r')
-text_data = text_fh.read().strip().split("\n")
-rir_dir = os.path.join(args.out_dir)
-if not os.path.exists(rir_dir):
-   os.makedirs(rir_dir)
+    text_fh = open(args.database_path, 'r')
+    text_data = text_fh.read().strip().split("\n")
+    rir_dir = os.path.join(args.out_dir)
+    if not os.path.exists(rir_dir):
+       os.makedirs(rir_dir)
 
-for line in text_data:
-    print(line)
-    line = line.split(" ")
-    room_x = float(line[1][1:-1])
-    room_y = float(line[2][1:-1])
-    room_z = float(line[3][1:-1])
-    mic_x = float(line[4][1:-1])
-    mic_y = float(line[5][1:-1])
-    mic_z = float(line[6][1:-1])
-    source_x = float(line[7][1:-1])
-    source_y = float(line[8][1:-1])
-    source_z = float(line[9][1:-1])
-    rt60 = float(line[10])
-
-    room_dim = [room_x, room_y, room_z] # in meters
-    mic_pos = [mic_x, mic_y, mic_z] # in  meters
-    source_pos = [source_x, source_y, source_z] # in  meters
-    mic_positions = [mic_pos]
-
-    rir = do_everything(room_dim, mic_positions, source_pos, rt60)
-    print(len(rir))
-    id = line[0]
-    rir_filename = os.path.join(args.out_dir, id + '.txt')
-    np.savetxt(rir_filename, rir)
+    for line in text_data:
+        line = line.split(" ")
+        room_x = float(line[1][1:-1])
+        room_y = float(line[2][1:-1])
+        room_z = float(line[3][1:-1])
+        mic_x = float(line[4][1:-1])
+        mic_y = float(line[5][1:-1])
+        mic_z = float(line[6][1:-1])
+        source_x = float(line[7][1:-1])
+        source_y = float(line[8][1:-1])
+        source_z = float(line[9][1:-1])
+        rt60 = float(line[10])
+    
+        room_dim = [room_x, room_y, room_z] # in meters
+        mic_pos = [mic_x, mic_y, mic_z] # in  meters
+        source_pos = [source_x, source_y, source_z] # in  meters
+        mic_positions = [mic_pos]
+    
+        rir = do_everything(room_dim, mic_positions, source_pos, rt60)
+        id = line[0]
+        rir_filename = os.path.join(args.out_dir, id + '.txt')
+        np.savetxt(rir_filename, rir)
