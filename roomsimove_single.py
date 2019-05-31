@@ -1,8 +1,17 @@
+#!/usr/bin/env python
+
 import argparse
 import numpy as np
 from scipy.interpolate import interp1d
 import scipy.signal as scipy_sig
+import os
 
+parser = argparse.ArgumentParser(description="""Creates line images from page image.""")
+parser.add_argument('database_path', type=str,
+                    help='Path to the downloaded (and extracted) mdacat data')
+parser.add_argument('out_dir', type=str, help='Where to write output files.')
+args = parser.parse_args()
+sampling_rate = 16000
 
 def do_everything(room_dim, mic_positions, source_pos, rt60):
     absorption = rt60_to_absorption(room_dim, rt60)
@@ -458,18 +467,36 @@ class RoomSim(object):
         return tm_source
 
 
+### main ###
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('config', help='Config file')
-    parser.add_argument('source_pos_x', help='Source x pos')
-    parser.add_argument('source_pos_y', help='Source y pos')
-    parser.add_argument('source_pos_z', help='Source z pos')
-    parser.add_argument('out_file', help='File to write the RIR')
-    args = parser.parse_args()
-    source_pos = [float(args.source_pos_x), \
-                    float(args.source_pos_y),\
-                    float(args.source_pos_z)]
-    sim_rir = RoomSim.init_from_config_file(args.config)
-    rir = sim_rir.create_rir(source_pos)
-    np.savetxt(args.out_file, rir)
+text_fh = open(args.database_path, 'r')
+text_data = text_fh.read().strip().split("\n")
+rir_dir = os.path.join(args.out_dir)
+if not os.path.exists(rir_dir):
+   os.makedirs(rir_dir)
+
+for line in text_data:
+    print(line)
+    line = line.split(" ")
+    room_x = float(line[1][1:-1])
+    room_y = float(line[2][1:-1])
+    room_z = float(line[3][1:-1])
+    mic_x = float(line[4][1:-1])
+    mic_y = float(line[5][1:-1])
+    mic_z = float(line[6][1:-1])
+    source_x = float(line[7][1:-1])
+    source_y = float(line[8][1:-1])
+    source_z = float(line[9][1:-1])
+    rt60 = float(line[10])
+
+    room_dim = [room_x, room_y, room_z] # in meters
+    mic_pos = [mic_x, mic_y, mic_z] # in  meters
+    source_pos = [source_x, source_y, source_z] # in  meters
+    mic_positions = [mic_pos]
+
+    rir = do_everything(room_dim, mic_positions, source_pos, rt60)
+    print(len(rir))
+    id = line[0]
+    rir_filename = os.path.join(args.out_dir, id + '.txt')
+    np.savetxt(rir_filename, rir)
